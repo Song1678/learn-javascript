@@ -1,5 +1,7 @@
 /**
- * 练习 1-3：手写 call / apply / bind / bindAll
+ * 练习 1-3：手写 call / apply / bind / bindAll  ⭐⭐⭐ 选做
+ *
+ * 卡住时看同目录的 HINTS.md；[进阶] 要求可以第二遍再做（--basic 模式会跳过对应测试）。
  *
  * 【业务背景】
  * 公司的前端埋点 SDK 需要在各种回调中保证 this 正确，同时团队想借这个机会

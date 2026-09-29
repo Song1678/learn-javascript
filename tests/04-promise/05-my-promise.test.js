@@ -1,10 +1,10 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep, codeOf } from '../_helpers.js';
+import { load, sleep, codeOf, advancedDescribe } from '../_helpers.js';
 
 const { MyPromise } = await load('04-promise/05-my-promise.js');
 
-describe('MyPromise：基础', () => {
+advancedDescribe('MyPromise：基础', () => {
   test('实现中不使用原生 Promise', () => {
     assert.doesNotMatch(codeOf(MyPromise), /\bPromise\b(?!\/)/, '实现中出现了原生 Promise');
   });
@@ -77,7 +77,7 @@ describe('MyPromise：基础', () => {
   });
 });
 
-describe('MyPromise：链式调用', () => {
+advancedDescribe('MyPromise：链式调用', () => {
   test('then 返回新 promise，值沿链传递', async () => {
     const p1 = MyPromise.resolve(1);
     const p2 = p1.then((v) => v + 1);
@@ -187,7 +187,7 @@ describe('MyPromise：链式调用', () => {
   });
 });
 
-describe('MyPromise：finally 与静态方法', () => {
+advancedDescribe('MyPromise：finally 与静态方法', () => {
   test('finally 不改变原值 / 原错误', async () => {
     const log = [];
     const v = await MyPromise.resolve('v').finally((...args) => log.push(args.length));

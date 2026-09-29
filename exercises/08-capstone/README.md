@@ -33,21 +33,21 @@
 | # | 需求 | 错误响应 |
 | --- | --- | --- |
 | 1.1 | 校验参数，一次性报告**所有**错误 | 400 `VALIDATION_FAILED` |
-| 1.2 | 同一 SKU 出现多次时合并数量 | |
+| 1.2 | [进阶] 同一 SKU 出现多次时合并数量 | |
 | 1.3 | 并行查询商品信息 | 404 `NOT_FOUND` |
-| 1.4 | 预占库存，并发不超过 `reserveConcurrency` | |
+| 1.4 | [进阶] 预占库存，并发不超过 `reserveConcurrency` | |
 | 1.5 | 库存服务返回 `retryable` 错误时，指数退避重试 | 重试耗尽：503 `INVENTORY_UNAVAILABLE` |
-| 1.6 | 任一商品预占失败，**释放所有已成功的预占**（补偿） | 库存不足：409 `CONFLICT` |
+| 1.6 | 库存不足时返回 409；[进阶] 任一商品预占失败，**释放所有已成功的预占**（补偿） | 库存不足：409 `CONFLICT` |
 | 1.7 | 金额以「分」计算，保存订单，发布 `order.created` | |
 
-> ⚠️ **1.6 是本项目最大的坑**：如果你直接用 `mapLimit`（失败即停止）预占，第一个失败发生时，其它还在「途中」的预占稍后会成功 —— 但此时已经没人去释放它们了。测试专门构造了这种场景（一个很慢的成功 + 一个很快的失败）。想想怎么保证「所有预占都结束之后」再统一判断和补偿？
+> ⚠️ **1.6 是本项目最大的坑（[进阶]）**：如果你直接用 `mapLimit`（失败即停止）预占，第一个失败发生时，其它还在「途中」的预占稍后会成功 —— 但此时已经没人去释放它们了。测试专门构造了这种场景（一个很慢的成功 + 一个很快的失败）。想想怎么保证「所有预占都结束之后」再统一判断和补偿？
 
 ### 2. 支付订单 `payOrder(id)`
 
 | # | 需求 | 错误响应 |
 | --- | --- | --- |
 | 2.1 | 订单必须存在且为 `PENDING` | 404 / 409 |
-| 2.2 | **防重复支付**：用户连点两次「支付」，只能扣一次钱 | 409 |
+| 2.2 | [进阶] **防重复支付**：用户连点两次「支付」，只能扣一次钱 | 409 |
 | 2.3 | 调用回调风格的支付 SDK（注意 `this`！） | |
 | 2.4 | 支付网关可能永不回调 → 超时控制 | 504 `PAYMENT_TIMEOUT` |
 | 2.5 | 扣款失败 | 402 `PAYMENT_FAILED` |
@@ -70,18 +70,24 @@
 - 取消：发短信。
 - 短信网关偶发失败时重试。
 
-## 如何开始
+## 闯关路线
 
-```bash
-npm test -- 08               # 跑综合项目的全部测试
-npm test -- 08/utils         # 先完成工具函数
-npm test -- 08/create        # 再完成下单
-npm test -- 08/pay           # 支付与取消
-npm test -- 08/query         # 查询
-npm run demo                 # 看看你的服务跑起来是什么样子
-```
+这个项目比较大，已经拆成 6 个关卡。**每一关都用 `--basic`（基础模式）完成**，全部通关后再去掉 `--basic` 挑战 `[进阶]` 测试。
+卡住时看 [HINTS.md](HINTS.md)。
 
-建议顺序：`utils/async.js` → `utils/id.js` → `getOrder` → `createOrder`（先不管 1.4~1.6，让正常下单跑通，再逐条加上）→ `notificationService.js` → `payOrder` → `cancelOrder` → `iterateOrders` → `getUserStats`。
+| 关卡 | 内容 | 需要修改的文件 | 验证命令 | 难度 |
+| --- | --- | --- | --- | --- |
+| 1 | 工具函数 | `utils/async.js`、`utils/id.js` | `npm test -- 08/utils` | ⭐ |
+| 2 | 能下单：校验参数、查询商品、逐个预占库存、保存订单 | `orderService.js`：`getOrder`、`createOrder`、`#validateCreateInput`、`#reserveAll` 的 3.1 | `npm test -- 08/create --basic`（前 6 个通过即可） | ⭐⭐ |
+| 3 | 库存预占：重试、库存不足 | `orderService.js`：`#reserveAll` 的 3.2 | `npm test -- 08/create --basic` 全部通过 | ⭐⭐ |
+| 4 | 支付与通知 | `constructor` 中的 `#charge`、`payOrder`、`notificationService.js` | `npm test -- 08/pay --basic` 中的支付部分 | ⭐⭐ |
+| 5 | 取消订单 | `cancelOrder`、`#releaseAll` | `npm test -- 08/pay --basic` 全部通过 | ⭐⭐ |
+| 6 | 查询与统计 | `iterateOrders`、`getUserStats` | `npm test -- 08/query --basic` | ⭐⭐ |
+| 🏆 | 进阶：失败补偿、并发控制、防重复支付…… | 各处标记了 `[进阶]` 的部分 | `npm test -- 08` | ⭐⭐⭐ |
+
+> **关卡 1 小贴士**：如果你还没做完第 04、05、06 章，可以直接从 `solutions/08-capstone/src/utils/` 复制这两个文件 —— 本章的重点是业务逻辑，不是工具函数。
+
+每过一关，运行 `npm run demo` 看看你的服务跑起来的样子（还没实现的部分会显示 HTTP 500）。
 
 **遇到测试失败时**：先读测试代码弄清楚它在构造什么场景，再用 `console.log` 或 VS Code 调试器（在测试文件上右键 → Debug）排查。这是真实工作中最重要的能力之一。
 

@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { latestOnly, abortable } = await load('05-async-await/04-latest-only.js');
 
@@ -59,7 +59,7 @@ describe('latestOnly：订单筛选竞态', () => {
     assert.equal(seenSignal.aborted, true);
   });
 
-  test('配合真实的可取消操作：signal 被 abort 后停止工作', async () => {
+  advancedTest('配合真实的可取消操作：signal 被 abort 后停止工作', async () => {
     let pagesLoaded = 0;
     const loadAllPages = latestOnly(async (keyword, signal) => {
       for (let page = 1; page <= 5; page++) {
@@ -78,7 +78,7 @@ describe('latestOnly：订单筛选竞态', () => {
   });
 });
 
-describe('abortable', () => {
+advancedDescribe('abortable', () => {
   test('未取消时跟随原结果', async () => {
     const c = new AbortController();
     assert.equal(await abortable(sleep(5).then(() => 'ok'), c.signal), 'ok');

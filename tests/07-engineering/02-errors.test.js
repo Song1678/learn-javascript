@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedTest } from '../_helpers.js';
 
 const { AppError, ValidationError, NotFoundError, ConflictError, toHttpResponse, assertFound } = await load(
   '07-engineering/02-errors.js',
@@ -18,7 +18,7 @@ describe('AppError', () => {
     assert.ok(err.stack.includes('出错了'), '应当有堆栈信息');
   });
 
-  test('自定义 code / status / details / cause', () => {
+  advancedTest('自定义 code / status / details / cause', () => {
     const dbError = new Error('ER_DUP_ENTRY: Duplicate entry');
     const err = new AppError('创建用户失败', {
       code: 'USER_CREATE_FAILED',
@@ -37,7 +37,7 @@ describe('AppError', () => {
     assert.deepEqual(JSON.parse(JSON.stringify(err)), { name: 'AppError', code: 'C', message: 'x', details: { a: 1 } });
   });
 
-  test('任意子类的 name 自动正确', () => {
+  advancedTest('任意子类的 name 自动正确', () => {
     class PaymentError extends AppError {}
     assert.equal(new PaymentError('支付失败').name, 'PaymentError');
   });

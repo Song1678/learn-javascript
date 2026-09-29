@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep, codeOf } from '../_helpers.js';
+import { load, sleep, codeOf, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { all, allSettled, race, any } = await load('04-promise/03-combinators.js');
 
@@ -68,13 +68,13 @@ describe('race：超时控制', () => {
     assert.equal(await race([ok('慢', 10), '缓存值']), '缓存值');
   });
 
-  test('空输入永远 pending', async () => {
+  advancedTest('空输入永远 pending', async () => {
     const result = await Promise.race([race([]).then(() => 'settled'), ok('pending', 20)]);
     assert.equal(result, 'pending');
   });
 });
 
-describe('any：多 CDN 节点', () => {
+advancedDescribe('any：多 CDN 节点', () => {
   test('返回第一个成功的结果，忽略失败', async () => {
     const result = await any([fail('节点 A 故障', 5), ok('节点 B', 20), ok('节点 C', 30)]);
     assert.equal(result, '节点 B');

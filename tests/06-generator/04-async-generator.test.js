@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { paginate, batchAsync, exportAllOrders, poll } = await load('06-generator/04-async-generator.js');
 
@@ -107,14 +107,14 @@ describe('exportAllOrders', () => {
     assert.equal(writer.closed, true);
   });
 
-  test('写入失败时也要关闭 writer，并抛出错误', async () => {
+  advancedTest('写入失败时也要关闭 writer，并抛出错误', async () => {
     const { fetchPage } = createOrderApi(50, 10);
     const writer = createWriter({ failOnBatch: 1 });
     await assert.rejects(exportAllOrders(fetchPage, writer, { batchSize: 10 }), /磁盘已满/);
     assert.equal(writer.closed, true);
   });
 
-  test('拉取失败时也要关闭 writer', async () => {
+  advancedTest('拉取失败时也要关闭 writer', async () => {
     const writer = createWriter();
     const fetchPage = async (cursor) => {
       if (cursor) throw new Error('接口超时');
@@ -125,7 +125,7 @@ describe('exportAllOrders', () => {
   });
 });
 
-describe('poll：支付状态轮询', () => {
+advancedDescribe('poll：支付状态轮询', () => {
   test('产出每次结果，满足条件后结束', async () => {
     const statuses = ['PENDING', 'PENDING', 'SUCCESS', 'SHOULD_NOT_REACH'];
     let calls = 0;

@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { createStore, applyMiddleware } = await load('03-closure/03-store.js');
 
@@ -47,7 +47,7 @@ describe('createStore', () => {
     assert.throws(() => store.dispatch(() => {}), TypeError);
   });
 
-  test('reducer 中 dispatch 会抛错，且之后 store 仍可正常使用', () => {
+  advancedTest('reducer 中 dispatch 会抛错，且之后 store 仍可正常使用', () => {
     let store;
     const bad = (state = 0, action) => {
       if (action.type === 'bad') store.dispatch({ type: 'other' });
@@ -70,7 +70,7 @@ describe('createStore', () => {
     assert.deepEqual(log, ['nav:1', 'sidebar:1', 'sidebar:2']);
   });
 
-  test('通知过程中订阅/取消订阅不影响本轮通知', () => {
+  advancedTest('通知过程中订阅/取消订阅不影响本轮通知', () => {
     const store = createStore(cartReducer);
     const log = [];
     let unB;
@@ -85,7 +85,7 @@ describe('createStore', () => {
   });
 });
 
-describe('applyMiddleware（附加题）', () => {
+advancedDescribe('applyMiddleware（附加题）', () => {
   const thunk = ({ dispatch, getState }) => (next) => (action) =>
     typeof action === 'function' ? action(dispatch, getState) : next(action);
 

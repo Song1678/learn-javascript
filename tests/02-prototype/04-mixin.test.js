@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedTest } from '../_helpers.js';
 
 const { mixin, Timestamps, Serializable } = await load('02-prototype/04-mixin.js');
 
@@ -42,7 +42,7 @@ describe('mixin 基础行为', () => {
     assert.equal(m.lazy, 2);
   });
 
-  test('setter 也被保留', () => {
+  advancedTest('setter 也被保留', () => {
     const Mixed = mixin(Model, {
       set fullName(v) {
         [this.first, this.last] = v.split(' ');
@@ -54,7 +54,7 @@ describe('mixin 基础行为', () => {
     assert.equal(m.last, 'Lovelace');
   });
 
-  test('Symbol 属性与不可枚举属性也被复制', () => {
+  advancedTest('Symbol 属性与不可枚举属性也被复制', () => {
     const tag = Symbol('tag');
     const src = { [tag]: 'tagged' };
     Object.defineProperty(src, 'hidden', { value: () => 'hidden', enumerable: false });
@@ -69,7 +69,7 @@ describe('mixin 基础行为', () => {
     assert.equal(new Mixed({}).who(), 'B');
   });
 
-  test('新类的 name 便于调试', () => {
+  advancedTest('新类的 name 便于调试', () => {
     assert.equal(mixin(Model, Timestamps, Serializable).name, 'ModelWith2Mixins');
   });
 });

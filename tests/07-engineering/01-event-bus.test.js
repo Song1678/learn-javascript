@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { EventBus } = await load('07-engineering/01-event-bus.js');
 
@@ -77,7 +77,7 @@ describe('EventBus：订阅与发布', () => {
     assert.equal(n, 1);
   });
 
-  test('once 监听器内部再次 emit 同一事件，不会重复触发', () => {
+  advancedTest('once 监听器内部再次 emit 同一事件，不会重复触发', () => {
     const bus = silent();
     let n = 0;
     bus.once('e', () => {
@@ -88,7 +88,7 @@ describe('EventBus：订阅与发布', () => {
     assert.equal(n, 1);
   });
 
-  test('emit 过程中增删订阅不影响本次 emit', () => {
+  advancedTest('emit 过程中增删订阅不影响本次 emit', () => {
     const bus = silent();
     const log = [];
     const b = () => log.push('b');
@@ -132,7 +132,7 @@ describe('EventBus：错误隔离', () => {
   });
 });
 
-describe('EventBus：通配符', () => {
+advancedDescribe('EventBus：通配符', () => {
   test("'*' 收到所有事件，参数为 (event, ...args)，在普通监听器之后调用", () => {
     const bus = silent();
     const log = [];
@@ -145,7 +145,7 @@ describe('EventBus：通配符', () => {
   });
 });
 
-describe('EventBus：emitAsync', () => {
+advancedDescribe('EventBus：emitAsync', () => {
   test('并发执行所有监听器，等待全部完成，统计成败', async () => {
     const errors = [];
     const bus = new EventBus({ onError: (err) => errors.push(err.message) });

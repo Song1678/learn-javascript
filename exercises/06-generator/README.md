@@ -48,16 +48,21 @@ function* range(start, end) {
 
 ## 练习
 
-| 文件 | 类型 | 内容 |
-| --- | --- | --- |
-| `01-predict.js` | 🧠 预测输出 | 9 道题：惰性、双向通信、return/throw、yield* |
-| `02-iterables.js` | ✍️ 实现 | 订单号生成器（每日重置 + 手动重置）、可迭代的订单簿类 |
-| `03-lazy-pipeline.js` | ✍️ 实现 | 从海量日志中找慢请求：惰性 `map/filter/limit/chunk/pipe` |
-| `04-async-generator.js` | ✍️ 实现 | 游标分页导出全部订单、支付状态轮询 |
-| `05-co.js` | 🏆 挑战 | 实现 co 自动执行器，并用生成器改写结账流程 |
+| 文件 | 难度 | 类型 | 内容 |
+| --- | --- | --- | --- |
+| `00-basics.js` | ⭐ 必做 | ✍️ 入门 | yield、range、分页、无限轮播、让对象可迭代 |
+| `01-predict.js` | ⭐⭐ 必做 | 🧠 预测输出 | 9 道题：惰性、双向通信、return/throw、yield* |
+| `02-iterables.js` | ⭐⭐ 必做 | ✍️ 实现 | 订单号生成器（每日重置）、可迭代的订单簿类 |
+| `03-lazy-pipeline.js` | ⭐⭐ 必做 | ✍️ 实现 | 从海量日志中找慢请求：惰性 `map/filter/limit/chunk/pipe` |
+| `04-async-generator.js` | ⭐⭐⭐ 选做 | ✍️ 实现 | 游标分页导出全部订单；[进阶] 支付状态轮询 |
+| `05-co.js` | 🏆 挑战 | ✍️ 实现 | 实现 co 自动执行器，并用生成器改写结账流程（整道题都是 [进阶]） |
+
+> 第一遍学习：按顺序完成「必做」，用 `--basic` 模式跑测试（跳过选做练习和 `[进阶]` 用例）。卡住时看 [HINTS.md](HINTS.md)，提示分三级，一次只展开一级。
+> 学完全部章节后，再回来挑战「选做」和 `[进阶]`。
 
 ```bash
-npm test -- 06
+npm test -- 06 --basic      # 基础模式（第一遍推荐）
+npm test -- 06              # 完整模式
 ```
 
 ## 延伸思考

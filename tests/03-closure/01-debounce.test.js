@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { debounce, throttle } = await load('03-closure/01-debounce.js');
 
@@ -52,7 +52,7 @@ describe('debounce', () => {
     assert.equal(count, 1, 'cancel 后仍可继续使用');
   });
 
-  test('flush 立即执行并返回结果', async () => {
+  advancedTest('flush 立即执行并返回结果', async () => {
     let count = 0;
     const fn = debounce((x) => {
       count++;
@@ -77,7 +77,7 @@ describe('debounce', () => {
   });
 });
 
-describe('throttle（附加题）', () => {
+advancedDescribe('throttle（附加题）', () => {
   test('首次立即执行，窗口期内的调用合并为结尾的一次', async () => {
     const calls = [];
     const onScroll = throttle((y) => calls.push(y), 40);

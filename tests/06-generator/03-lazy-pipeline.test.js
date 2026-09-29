@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, codeOf } from '../_helpers.js';
+import { load, codeOf, advancedTest } from '../_helpers.js';
 
 const { lines, map, filter, limit, chunk, pipe, parseLogLine } = await load('06-generator/03-lazy-pipeline.js');
 
@@ -25,7 +25,7 @@ describe('lines', () => {
     assert.deepEqual([...lines('a\n\nb')], ['a', '', 'b'], '中间的空行要保留');
   });
 
-  test('不使用 split，且是惰性的', () => {
+  advancedTest('不使用 split，且是惰性的', () => {
     assert.doesNotMatch(codeOf(lines), /\.split\(/);
     const it = lines('first\nsecond');
     assert.equal(it.next().value, 'first');

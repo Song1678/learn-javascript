@@ -1,5 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { advancedTest } from '../_helpers.js';
 import { setup } from './_setup.js';
 
 async function seed(svc) {
@@ -34,7 +35,7 @@ describe('查询', () => {
     );
   });
 
-  test('iterateOrders：惰性加载，提前 break 不再请求后续页', async () => {
+  advancedTest('iterateOrders：惰性加载，提前 break 不再请求后续页', async () => {
     const { svc, db } = setup();
     await seed(svc);
     const before = db.stats.listOrdersCalls;

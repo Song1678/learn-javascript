@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedTest } from '../_helpers.js';
 
 const { memoize } = await load('03-closure/02-memoize.js');
 
@@ -51,7 +51,7 @@ describe('memoize', () => {
     assert.equal(fn('x'), 2);
   });
 
-  test('异步：并发调用共享同一个 Promise', async () => {
+  advancedTest('异步：并发调用共享同一个 Promise', async () => {
     let calls = 0;
     const fetchStock = memoize(async (sku) => {
       calls++;
@@ -64,7 +64,7 @@ describe('memoize', () => {
     assert.equal(calls, 1);
   });
 
-  test('异步：失败的结果不被缓存', async () => {
+  advancedTest('异步：失败的结果不被缓存', async () => {
     let calls = 0;
     const fetchStock = memoize(async () => {
       calls++;
@@ -78,7 +78,7 @@ describe('memoize', () => {
     assert.equal(calls, 2);
   });
 
-  test('maxSize：超出容量淘汰最久未使用的条目（LRU）', () => {
+  advancedTest('maxSize：超出容量淘汰最久未使用的条目（LRU）', () => {
     let calls = 0;
     const fn = memoize((k) => {
       calls++;

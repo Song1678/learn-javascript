@@ -1,5 +1,5 @@
 /**
- * 练习 6-5：用生成器实现 async/await（co 自动执行器）
+ * 练习 6-5：用生成器实现 async/await（co 自动执行器）  🏆 选做
  *
  * 【为什么要做这道题】
  * 在 async/await 出现之前（ES2017 之前），Koa 1.x、redux-saga、co 等库就用「生成器 + Promise」

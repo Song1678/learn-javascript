@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, codeOf } from '../_helpers.js';
+import { load, codeOf, advancedTest } from '../_helpers.js';
 
 const { myNew, myInstanceOf, myCreate } = await load('02-prototype/03-new-instanceof.js');
 
@@ -25,7 +25,7 @@ describe('myNew', () => {
     assert.equal(Object.getPrototypeOf(order), Order.prototype);
   });
 
-  test('构造函数返回对象时，以返回值为准', () => {
+  advancedTest('构造函数返回对象时，以返回值为准', () => {
     const cached = { id: 'cached' };
     function Singleton() {
       this.id = 'new';
@@ -34,7 +34,7 @@ describe('myNew', () => {
     assert.equal(myNew(Singleton), cached);
   });
 
-  test('构造函数返回函数时，以返回值为准', () => {
+  advancedTest('构造函数返回函数时，以返回值为准', () => {
     const fn = () => {};
     function Factory() {
       return fn;
@@ -42,7 +42,7 @@ describe('myNew', () => {
     assert.equal(myNew(Factory), fn);
   });
 
-  test('构造函数返回原始值时，忽略返回值', () => {
+  advancedTest('构造函数返回原始值时，忽略返回值', () => {
     function Weird() {
       this.ok = true;
       return 42;
@@ -81,7 +81,7 @@ describe('myInstanceOf', () => {
     assert.equal(myInstanceOf(undefined, Object), false);
   });
 
-  test('无原型对象', () => {
+  advancedTest('无原型对象', () => {
     assert.equal(myInstanceOf(Object.create(null), Object), false);
   });
 
@@ -110,7 +110,7 @@ describe('myCreate', () => {
     assert.equal(dict.toString, undefined);
   });
 
-  test('支持属性描述符', () => {
+  advancedTest('支持属性描述符', () => {
     const o = myCreate(Object.prototype, {
       id: { value: 1, enumerable: true },
       secret: { value: 'x', enumerable: false },

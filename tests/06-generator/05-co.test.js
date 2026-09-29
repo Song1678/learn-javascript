@@ -1,10 +1,10 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep, codeOf } from '../_helpers.js';
+import { load, sleep, codeOf, advancedDescribe } from '../_helpers.js';
 
 const { run, checkoutFlow, checkout } = await load('06-generator/05-co.js');
 
-describe('run：生成器自动执行器', () => {
+advancedDescribe('run：生成器自动执行器', () => {
   test('等待 yield 的 Promise 并送回结果', async () => {
     const result = await run(function* () {
       const a = yield sleep(5).then(() => 1);
@@ -86,7 +86,7 @@ describe('run：生成器自动执行器', () => {
   });
 });
 
-describe('checkoutFlow：用生成器改写结账流程', () => {
+advancedDescribe('checkoutFlow：用生成器改写结账流程', () => {
   function createApi({ couponFails = false } = {}) {
     const calls = [];
     return {

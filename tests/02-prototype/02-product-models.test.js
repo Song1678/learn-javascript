@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { load } from '../_helpers.js';
+import { load, advancedTest } from '../_helpers.js';
 
 const { Product, DiscountProduct, DigitalProduct } = await load('02-prototype/02-product-models.js');
 
@@ -74,7 +74,7 @@ describe('商品模型（ES5 继承）', () => {
     assert.equal(new Product({ id: 3, name: 'z', price: 1 }).constructor, Product);
   });
 
-  test('子类原型上没有父类的实例属性（未使用 new Product() 创建原型）', () => {
+  advancedTest('子类原型上没有父类的实例属性（未使用 new Product() 创建原型）', () => {
     for (const Child of [DiscountProduct, DigitalProduct]) {
       for (const key of ['id', 'name', 'price']) {
         assert.ok(!Object.hasOwn(Child.prototype, key), `${Child.name}.prototype 上不应有 ${key}`);
@@ -87,7 +87,7 @@ describe('商品模型（ES5 继承）', () => {
     assert.deepEqual(Object.keys(d).sort(), ['discount', 'id', 'name', 'price']);
   });
 
-  test('constructor 属性不可枚举（与原生行为一致，for...in 不会遍历到）', () => {
+  advancedTest('constructor 属性不可枚举（与原生行为一致，for...in 不会遍历到）', () => {
     const d = new DiscountProduct({ id: 1, name: 'x', price: 100, discount: 0.9 });
     const keys = [];
     for (const k in d) keys.push(k);

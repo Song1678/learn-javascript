@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep, trackConcurrency } from '../_helpers.js';
+import { load, sleep, trackConcurrency, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { mapLimit, TaskQueue } = await load('05-async-await/02-concurrency.js');
 
@@ -24,7 +24,7 @@ describe('mapLimit：批量上传商品图片', () => {
     assert.equal(stats.calls, 10);
   });
 
-  test('一个完成立即补一个，而不是整批等待', async () => {
+  advancedTest('一个完成立即补一个，而不是整批等待', async () => {
     // 任务耗时：[50, 10, 10, 10, 10]，limit = 2
     // 正确的并发池：约 50ms 完成；「分批」实现：50 + 10 + 10 = 70ms 以上
     const costs = [50, 10, 10, 10, 10];
@@ -34,7 +34,7 @@ describe('mapLimit：批量上传商品图片', () => {
     assert.ok(cost < 65, `耗时应约为 50ms，实际 ${cost}ms`);
   });
 
-  test('失败时立即 reject，且不再启动新任务', async () => {
+  advancedTest('失败时立即 reject，且不再启动新任务', async () => {
     const started = [];
     const start = Date.now();
     await assert.rejects(
@@ -56,7 +56,7 @@ describe('mapLimit：批量上传商品图片', () => {
   });
 });
 
-describe('TaskQueue：陆续加入的上传任务', () => {
+advancedDescribe('TaskQueue：陆续加入的上传任务', () => {
   test('add 返回任务结果，并发受控', async () => {
     const queue = new TaskQueue({ concurrency: 2 });
     const { fn, stats } = trackConcurrency(async (x) => {

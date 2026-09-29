@@ -1,12 +1,12 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedDescribe } from '../_helpers.js';
 
 const { v, SchemaError } = await load('07-engineering/03-validator.js');
 
 const paths = (result) => result.issues.map((i) => i.path).sort();
 
-describe('基础类型', () => {
+advancedDescribe('基础类型', () => {
   test('string', () => {
     assert.deepEqual(v.string().safeParse('abc'), { success: true, data: 'abc' });
     assert.equal(v.string().safeParse(1).success, false);
@@ -48,7 +48,7 @@ describe('基础类型', () => {
   });
 });
 
-describe('optional / default / refine', () => {
+advancedDescribe('optional / default / refine', () => {
   test('必填与可选', () => {
     assert.deepEqual(v.string().safeParse(undefined).issues, [{ path: '', message: '必填' }]);
     assert.deepEqual(v.string().min(3).optional().safeParse(undefined), { success: true, data: undefined });
@@ -71,7 +71,7 @@ describe('optional / default / refine', () => {
   });
 });
 
-describe('不可变性', () => {
+advancedDescribe('不可变性', () => {
   test('链式方法返回新实例，不修改原 schema', () => {
     const base = v.string();
     const short = base.max(3);
@@ -90,7 +90,7 @@ describe('不可变性', () => {
   });
 });
 
-describe('嵌套结构：下单请求', () => {
+advancedDescribe('嵌套结构：下单请求', () => {
   const createOrderSchema = v.object({
     userId: v.string().min(1),
     items: v

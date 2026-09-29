@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedTest } from '../_helpers.js';
 import { setup } from './_setup.js';
 
 const { ConflictError, NotFoundError } = await load('08-capstone/src/errors.js');
@@ -36,7 +36,7 @@ describe('支付 payOrder', () => {
     assert.deepEqual(payment.chargedOrders, [order.id]);
   });
 
-  test('并发重复提交（用户连点两次）：只扣款一次', async () => {
+  advancedTest('并发重复提交（用户连点两次）：只扣款一次', async () => {
     const { svc, payment } = setup();
     const order = await createSampleOrder(svc);
     const results = await Promise.allSettled([svc.payOrder(order.id), svc.payOrder(order.id)]);
@@ -87,7 +87,7 @@ describe('支付 payOrder', () => {
     );
   });
 
-  test('短信偶发失败会自动重试', async () => {
+  advancedTest('短信偶发失败会自动重试', async () => {
     const { svc, sms } = setup({ smsFailTimes: 1 });
     const order = await createSampleOrder(svc);
     await svc.payOrder(order.id);
@@ -126,7 +126,7 @@ describe('取消 cancelOrder', () => {
     assert.deepEqual(payment.chargedOrders, []);
   });
 
-  test('支付进行中不能取消', async () => {
+  advancedTest('支付进行中不能取消', async () => {
     const { svc } = setup({ config: { paymentTimeout: 1000 } });
     const order = await createSampleOrder(svc);
     const paying = svc.payOrder(order.id);

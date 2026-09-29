@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedDescribe, advancedTest } from '../_helpers.js';
 
 const { promisify, promisifyAll, callbackify } = await load('04-promise/02-promisify.js');
 
@@ -42,7 +42,7 @@ describe('promisify', () => {
     assert.equal(payment.merchantId, 'M002');
   });
 
-  test('原函数同步抛错时返回 rejected Promise', async () => {
+  advancedTest('原函数同步抛错时返回 rejected Promise', async () => {
     const broken = promisify(() => {
       throw new Error('SDK 未初始化');
     });
@@ -53,7 +53,7 @@ describe('promisify', () => {
     await assert.rejects(result, /SDK 未初始化/);
   });
 
-  test('回调被多次调用时，只有第一次有效', async () => {
+  advancedTest('回调被多次调用时，只有第一次有效', async () => {
     const flaky = promisify((cb) => {
       cb(null, 'first');
       cb(new Error('second'));
@@ -104,7 +104,7 @@ describe('promisifyAll', () => {
   });
 });
 
-describe('callbackify', () => {
+advancedDescribe('callbackify', () => {
   test('成功：callback(null, result)', (t, done) => {
     const getUser = callbackify(async (id) => ({ id, name: 'Tom' }));
     getUser(1, (err, user) => {

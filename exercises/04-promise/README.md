@@ -64,16 +64,21 @@ promise.catch(() => {});   // 出了问题谁也不知道
 
 ## 练习
 
-| 文件 | 类型 | 内容 |
-| --- | --- | --- |
-| `01-event-loop.js` | 🧠 预测输出 | 9 道执行顺序题 |
-| `02-promisify.js` | ✍️ 实现 | 改造回调风格的老支付 SDK：`promisify` / `promisifyAll` / `callbackify` |
-| `03-combinators.js` | ✍️ 手写实现 | `all` / `allSettled` / `race` / `any` |
-| `04-timeout-retry.js` | ✍️ 实现 | 库存服务调用：超时控制 + 指数退避重试 |
-| `05-my-promise.js` | 🏆 挑战 | 从零实现符合 Promise/A+ 核心语义的 `MyPromise` |
+| 文件 | 难度 | 类型 | 内容 |
+| --- | --- | --- | --- |
+| `00-basics.js` | ⭐ 必做 | ✍️ 入门 | new Promise、then 链、catch、Promise.all（不用 async/await） |
+| `01-event-loop.js` | ⭐⭐ 必做 | 🧠 预测输出 | 9 道执行顺序题 |
+| `02-promisify.js` | ⭐⭐ 必做 | ✍️ 实现 | 改造回调风格的老支付 SDK：`promisify` / `promisifyAll`；[进阶] `callbackify` |
+| `03-combinators.js` | ⭐⭐ 必做 | ✍️ 手写实现 | `all` / `allSettled` / `race`；[进阶] `any` |
+| `04-timeout-retry.js` | ⭐⭐⭐ 选做 | ✍️ 实现 | 库存服务调用：超时控制 + 重试（[进阶] 指数退避） |
+| `05-my-promise.js` | 🏆 挑战 | ✍️ 手写实现 | 从零实现符合 Promise/A+ 核心语义的 `MyPromise`（整道题都是 [进阶]） |
+
+> 第一遍学习：按顺序完成「必做」，用 `--basic` 模式跑测试（跳过选做练习和 `[进阶]` 用例）。卡住时看 [HINTS.md](HINTS.md)，提示分三级，一次只展开一级。
+> 学完全部章节后，再回来挑战「选做」和 `[进阶]`。
 
 ```bash
-npm test -- 04
+npm test -- 04 --basic      # 基础模式（第一遍推荐）
+npm test -- 04              # 完整模式
 npm test -- 04/my-promise    # 挑战题单独跑
 ```
 

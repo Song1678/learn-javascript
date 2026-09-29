@@ -1,8 +1,8 @@
 /**
  * 订单服务 —— 本项目的核心业务逻辑，也是你要完成的主要部分
  *
- * 详细需求见 exercises/08-capstone/README.md，这里只列出每个方法的要点。
- * 建议完成顺序：constructor → getOrder → createOrder → payOrder → cancelOrder → iterateOrders → getUserStats
+ * 详细需求和「关卡」划分见 exercises/08-capstone/README.md，这里只列出每个方法的要点。
+ * 卡住时看同目录的 ../../HINTS.md。
  *
  * 可用的依赖（通过构造函数注入）：
  *   db         infra/db.js                  getProduct / insertOrder / getOrder / updateOrder / listOrders
@@ -35,6 +35,7 @@ export class OrderService {
   #nextId;
   #config;
   #charge; // Promise 版本的扣款函数
+  #paying = new Set(); // 正在支付中的订单号（用于防重复支付，关卡 5）
 
   constructor({ db, inventory, payment, bus, nextId, config = {} }) {
     this.#db = db;
@@ -51,26 +52,74 @@ export class OrderService {
    * @param {{ userId: string, items: { sku: string, qty: number }[] }} input
    * @returns {Promise<Order>}
    *
-   * 1. 校验参数，不合法时抛出 ValidationError(message, details)，details 为 [{ path, message }]，报告所有错误
-   *      userId：非空字符串；items：非空数组；items[i].sku：非空字符串；items[i].qty：正整数
-   *    同一 SKU 出现多次时合并数量
-   * 2. 并行查询所有商品，任一不存在则抛出 NotFoundError('商品', sku)（提示：assertFound）
-   * 3. 预占库存：
-   *      - 并发数不超过 config.reserveConcurrency
-   *      - err.retryable 为 true 时重试（config.inventoryRetries 次，config.retryDelay 起始间隔，2 倍退避）
-   *      - 任一 SKU 预占失败 → 释放「所有已成功」的预占，然后：
-   *          库存不足（err.code === 'OUT_OF_STOCK'）→ ConflictError('库存不足', { sku })
-   *          其它（重试耗尽）→ AppError('库存服务不可用', { code: 'INVENTORY_UNAVAILABLE', status: 503, details: { sku }, cause: err })
-   *      - ⚠️ 陷阱：如果用「失败即停止」的方式，失败时还在途中的预占稍后成功了，就没人释放了（库存泄漏）
-   * 4. 生成订单并保存：
-   *      { id, userId, items: [{ sku, name, price, qty, reservationId }], total, status: 'PENDING',
-   *        createdAt: Date.now(), paidAt: null, transactionId: null }
-   *      total = Σ price × qty（单位：分）
-   * 5. 发布 'order.created' 事件，返回订单
+   * 这个方法比较长，已经帮你拆成了 5 步和 3 个私有辅助方法。
+   * 建议：先实现第 1、2、4、5 步（预占库存时暂时直接 for 循环逐个调用 inventory.reserve），
+   *      让「正常下单」的测试通过；然后再按关卡说明完善 #reserveAll。
    */
   async createOrder(input) {
+    // 第 1 步：校验参数并合并重复 SKU
+    const { userId, items } = this.#validateCreateInput(input);
+
+    // 第 2 步：并行查询所有商品（Promise.all + this.#db.getProduct），
+    //         任何一个是 null 就抛出 NotFoundError('商品', sku)（提示：assertFound(商品, '商品', sku)）
+    // TODO: const products = ...
+
+    // 第 3 步：预占库存，得到每个商品的 { reservationId }（顺序与 items 一致）
+    // TODO: const reservations = await this.#reserveAll(items);
+
+    // 第 4 步：组装订单对象并保存（this.#db.insertOrder）
+    //   {
+    //     id: this.#nextId(),
+    //     userId,
+    //     items: [{ sku, name, price, qty, reservationId }],   // name、price 来自商品信息
+    //     total: Σ price × qty,
+    //     status: OrderStatus.PENDING,
+    //     createdAt: Date.now(),
+    //     paidAt: null,
+    //     transactionId: null,
+    //   }
+    // TODO
+
+    // 第 5 步：发布事件 this.#bus.emit('order.created', order)，返回订单
     // TODO
     throw new Error('TODO: 实现 createOrder');
+  }
+
+  /**
+   * 校验下单参数（关卡 2）
+   *   - 不合法时抛出 new ValidationError('参数校验失败', issues)，issues 为 [{ path, message }]，要报告「所有」错误
+   *       userId          必须是非空字符串           path: 'userId'
+   *       items           必须是非空数组             path: 'items'
+   *       items[i].sku    必须是非空字符串           path: `items[${i}].sku`
+   *       items[i].qty    必须是正整数               path: `items[${i}].qty`
+   *   - input 本身可能是 undefined
+   *   - 合法时返回 { userId, items }；[进阶] 同一 SKU 出现多次时合并数量（提示：Map）
+   */
+  #validateCreateInput(input) {
+    // TODO
+    return input;
+  }
+
+  /**
+   * 预占所有商品的库存（关卡 3），返回 [{ reservationId }]，顺序与 items 一致
+   *
+   * 分三个小步骤完成（每完成一步跑一次测试）：
+   *   3.1 逐个调用 this.#inventory.reserve(sku, qty)
+   *   3.2 加上重试：err.retryable 为 true 时重试（用 retry，参数见 this.#config），库存不足直接失败
+   *   3.3 [进阶] 用 mapLimit 限制并发；任一失败时释放所有已成功的预占，再抛出：
+   *         库存不足（err.code === 'OUT_OF_STOCK'）→ new ConflictError('库存不足', { sku })
+   *         其它 → new AppError('库存服务不可用', { code: 'INVENTORY_UNAVAILABLE', status: 503, details: { sku }, cause: err })
+   *       ⚠️ 陷阱：如果失败时还有预占在「途中」，它稍后成功了就没人释放了。
+   *         解决思路：让每个预占任务都「不抛错」，而是返回 { ok: true, value } 或 { ok: false, error, sku }，
+   *         等全部结束后再统一检查、统一释放。
+   */
+  async #reserveAll(items) {
+    // TODO
+  }
+
+  /** 释放订单明细中所有的库存预占（并行）：this.#inventory.release(item.reservationId) */
+  async #releaseAll(orderItems) {
+    // TODO
   }
 
   /**
@@ -94,6 +143,25 @@ export class OrderService {
    * 5. await bus.emitAsync('order.paid', 更新后的订单)，返回更新后的订单
    */
   async payOrder(id) {
+    // 第 1 步（关卡 5 再做）：[进阶] 防重复支付
+    //   if (this.#paying.has(id)) throw new ConflictError(...)
+    //   this.#paying.add(id)，并用 try { 下面所有步骤 } finally { this.#paying.delete(id) } 包起来
+
+    // 第 2 步：查询订单（this.getOrder 会自动处理不存在的情况），检查状态必须为 PENDING
+    // TODO
+
+    // 第 3 步：扣款，加超时。把可能出现的两种错误转换成业务错误：
+    //   let result;
+    //   try {
+    //     result = await withTimeout(this.#charge({ orderId: order.id, amount: order.total }), this.#config.paymentTimeout);
+    //   } catch (err) {
+    //     if (err instanceof TimeoutError) throw new AppError(...PAYMENT_TIMEOUT...);
+    //     throw new AppError(...PAYMENT_FAILED...);
+    //   }
+    // TODO
+
+    // 第 4 步：更新订单 { status: PAID, paidAt: Date.now(), transactionId: result.transactionId }
+    // 第 5 步：await this.#bus.emitAsync('order.paid', 更新后的订单)，返回更新后的订单
     // TODO
     throw new Error('TODO: 实现 payOrder');
   }
@@ -106,6 +174,9 @@ export class OrderService {
    * 4. 更新状态为 CANCELLED，await bus.emitAsync('order.cancelled', 更新后的订单)，返回更新后的订单
    */
   async cancelOrder(id) {
+    // 第 1 步：查询订单，状态必须为 PENDING；[进阶] 正在支付中（this.#paying.has(id)）也不能取消
+    // 第 2 步：释放库存 await this.#releaseAll(order.items)
+    // 第 3 步：更新状态为 CANCELLED，await this.#bus.emitAsync('order.cancelled', 更新后的订单)，返回更新后的订单
     // TODO
     throw new Error('TODO: 实现 cancelOrder');
   }

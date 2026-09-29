@@ -1,5 +1,7 @@
 /**
- * 练习 4-3：手写 Promise 组合器 all / allSettled / race / any
+ * 练习 4-3：手写 Promise 组合器 all / allSettled / race / any  ⭐⭐
+ *
+ * 卡住时看同目录的 HINTS.md；[进阶] 要求可以第二遍再做（--basic 模式会跳过对应测试）。
  *
  * 【业务背景】
  * 商品详情页打开时需要同时请求多个接口，不同模块对失败的容忍度不同：

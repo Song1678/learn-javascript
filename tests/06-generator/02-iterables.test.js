@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedTest } from '../_helpers.js';
 
 const { take, createOrderNoGenerator, OrderBook } = await load('06-generator/02-iterables.js');
 
@@ -25,7 +25,7 @@ describe('take', () => {
     assert.equal(pulled, 3);
   });
 
-  test('取完后关闭迭代器（finally 被执行）', () => {
+  advancedTest('取完后关闭迭代器（finally 被执行）', () => {
     let closed = false;
     function* source() {
       try {
@@ -65,7 +65,7 @@ describe('createOrderNoGenerator', () => {
     assert.equal(gen.next().value, 'SO20260930000001');
   });
 
-  test("next('reset') 手动重置", () => {
+  advancedTest("next('reset') 手动重置", () => {
     const gen = createOrderNoGenerator({ now: fixedNow });
     gen.next();
     gen.next();
@@ -119,7 +119,7 @@ describe('OrderBook', () => {
     assert.deepEqual([...book.byStatus('REFUNDED')], []);
   });
 
-  test('不暴露内部存储', () => {
+  advancedTest('不暴露内部存储', () => {
     const input = [...orders];
     const book = new OrderBook(input);
     input.push({ id: 99 });

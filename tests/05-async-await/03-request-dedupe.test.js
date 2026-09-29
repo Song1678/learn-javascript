@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, sleep } from '../_helpers.js';
+import { load, sleep, advancedTest } from '../_helpers.js';
 
 const { createCachedFetcher } = await load('05-async-await/03-request-dedupe.js');
 
@@ -61,7 +61,7 @@ describe('createCachedFetcher', () => {
     assert.equal((await result).name, '张三');
   });
 
-  test('失败不缓存，并发调用方都收到错误，下次重新请求', async () => {
+  advancedTest('失败不缓存，并发调用方都收到错误，下次重新请求', async () => {
     const api = createUserApi();
     const getUser = createCachedFetcher(api.getUser, { ttl: 1000 });
     api.failNext = true;
@@ -83,7 +83,7 @@ describe('createCachedFetcher', () => {
     assert.equal(api.calls, 2);
   });
 
-  test('invalidate 时正在进行的旧请求不写入缓存', async () => {
+  advancedTest('invalidate 时正在进行的旧请求不写入缓存', async () => {
     const api = createUserApi();
     const getUser = createCachedFetcher(api.getUser, { ttl: 1000 });
     const old = getUser('u1'); // 旧请求发出（此时拿到的是旧名字）
@@ -95,7 +95,7 @@ describe('createCachedFetcher', () => {
     assert.equal(api.calls, 2);
   });
 
-  test('clear 清空所有缓存', async () => {
+  advancedTest('clear 清空所有缓存', async () => {
     const api = createUserApi();
     const getUser = createCachedFetcher(api.getUser, { ttl: 1000 });
     await Promise.all([getUser('u1'), getUser('u2')]);

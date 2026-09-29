@@ -51,15 +51,20 @@ class DiscountProduct extends Product {       // Object.setPrototypeOf(DiscountP
 
 ## 练习
 
-| 文件 | 类型 | 内容 |
-| --- | --- | --- |
-| `01-predict.js` | 🧠 预测输出 | 11 道题：共享引用、属性遮蔽、constructor 丢失、instanceof 原理…… |
-| `02-product-models.js` | ✍️ 实现 | 不用 class，用 ES5 方式实现商品模型继承（寄生组合式继承） |
-| `03-new-instanceof.js` | ✍️ 手写实现 | 手写 `new` / `instanceof` / `Object.create` |
-| `04-mixin.js` | 🐞+✍️ | 修复 `Object.assign` 做 mixin 时 getter 失效的问题，实现正确的 mixin |
+| 文件 | 难度 | 类型 | 内容 |
+| --- | --- | --- | --- |
+| `00-basics.js` | ⭐ 必做 | ✍️ 入门 | 用 class 写商品模型，观察原型链 |
+| `01-predict.js` | ⭐⭐ 必做 | 🧠 预测输出 | 11 道题：共享引用、属性遮蔽、constructor 丢失、instanceof 原理…… |
+| `02-product-models.js` | ⭐⭐ 必做 | ✍️ 实现 | 不用 class，用 ES5 方式实现同样的商品模型（寄生组合式继承） |
+| `03-new-instanceof.js` | ⭐⭐⭐ 选做 | ✍️ 手写实现 | 手写 `new` / `instanceof` / `Object.create` |
+| `04-mixin.js` | ⭐⭐⭐ 选做 | 🐞+✍️ | 修复 `Object.assign` 做 mixin 时 getter 失效的问题，实现正确的 mixin |
+
+> 第一遍学习：按顺序完成「必做」，用 `--basic` 模式跑测试（跳过选做练习和 `[进阶]` 用例）。卡住时看 [HINTS.md](HINTS.md)，提示分三级，一次只展开一级。
+> 学完全部章节后，再回来挑战「选做」和 `[进阶]`。
 
 ```bash
-npm test -- 02
+npm test -- 02 --basic      # 基础模式（第一遍推荐）
+npm test -- 02              # 完整模式
 ```
 
 ## 做题建议

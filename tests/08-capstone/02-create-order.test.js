@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedTest } from '../_helpers.js';
 import { setup } from './_setup.js';
 
 const { ValidationError, NotFoundError, ConflictError, AppError } = await load('08-capstone/src/errors.js');
@@ -56,7 +56,7 @@ describe('创建订单 createOrder', () => {
     assert.deepEqual(events, [order.id]);
   });
 
-  test('同一 SKU 出现多次时合并数量', async () => {
+  advancedTest('同一 SKU 出现多次时合并数量', async () => {
     const { svc, inventory } = setup();
     const order = await svc.createOrder({
       userId: 'u1',
@@ -106,7 +106,7 @@ describe('创建订单 createOrder', () => {
     assert.equal(inventory.stats.reserveCalls, 0);
   });
 
-  test('库存不足：HTTP 409，并释放所有已预占的库存（包括较慢完成的）', async () => {
+  advancedTest('库存不足：HTTP 409，并释放所有已预占的库存（包括较慢完成的）', async () => {
     // SKU1 预占很慢（40ms），SKU4 很快就返回库存不足
     const { svc, app, inventory } = setup({ latencyBySku: { SKU1: 40 } });
     const res = await app.handle(() =>
@@ -141,7 +141,7 @@ describe('创建订单 createOrder', () => {
     assert.equal(inventory.stats.reserveCalls, 1);
   });
 
-  test('重试耗尽：HTTP 503 INVENTORY_UNAVAILABLE，保留原始错误，释放已预占库存', async () => {
+  advancedTest('重试耗尽：HTTP 503 INVENTORY_UNAVAILABLE，保留原始错误，释放已预占库存', async () => {
     const { svc, inventory } = setup({ flaky: { SKU2: 10 } });
     await assert.rejects(
       svc.createOrder({ userId: 'u1', items: [{ sku: 'SKU1', qty: 1 }, { sku: 'SKU2', qty: 1 }] }),
@@ -157,7 +157,7 @@ describe('创建订单 createOrder', () => {
     assert.equal(inventory.activeReservations, 0);
   });
 
-  test('库存预占并发受控（reserveConcurrency）', async () => {
+  advancedTest('库存预占并发受控（reserveConcurrency）', async () => {
     const { svc, inventory } = setup({ config: { reserveConcurrency: 2 } });
     await svc.createOrder({
       userId: 'u1',

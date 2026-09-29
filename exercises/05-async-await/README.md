@@ -55,15 +55,20 @@ async function f() {
 
 ## 练习
 
-| 文件 | 类型 | 内容 |
-| --- | --- | --- |
-| `01-fix-bugs.js` | 🐞 修 Bug | 运营后台 5 个典型 async/await Bug |
-| `02-concurrency.js` | ✍️ 实现 | 批量上传图片：并发池 `mapLimit` + 任务队列 `TaskQueue` |
-| `03-request-dedupe.js` | ✍️ 实现 | 首页多组件同时请求用户信息：请求去重 + 缓存 + 失效 |
-| `04-latest-only.js` | ✍️ 实现 | 订单筛选竞态：`AbortController` 取消过期请求 |
+| 文件 | 难度 | 类型 | 内容 |
+| --- | --- | --- | --- |
+| `00-basics.js` | ⭐ 必做 | ✍️ 入门 | await、try/catch、串行与并行、循环中的 await |
+| `01-fix-bugs.js` | ⭐⭐ 必做 | 🐞 修 Bug | 运营后台 5 个典型 async/await Bug |
+| `02-concurrency.js` | ⭐⭐⭐ 选做 | ✍️ 实现 | 批量上传图片：并发池 `mapLimit`；[进阶] 任务队列 `TaskQueue` |
+| `03-request-dedupe.js` | ⭐⭐⭐ 选做 | ✍️ 实现 | 首页多组件同时请求用户信息：请求去重 + 缓存 + 失效 |
+| `04-latest-only.js` | ⭐⭐⭐ 选做 | ✍️ 实现 | 订单筛选竞态：`AbortController` 取消过期请求 |
+
+> 第一遍学习：按顺序完成「必做」，用 `--basic` 模式跑测试（跳过选做练习和 `[进阶]` 用例）。卡住时看 [HINTS.md](HINTS.md)，提示分三级，一次只展开一级。
+> 学完全部章节后，再回来挑战「选做」和 `[进阶]`。
 
 ```bash
-npm test -- 05
+npm test -- 05 --basic      # 基础模式（第一遍推荐）
+npm test -- 05              # 完整模式
 ```
 
 ## 做题建议

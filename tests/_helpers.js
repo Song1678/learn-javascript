@@ -4,7 +4,7 @@
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test, describe } from 'node:test';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -70,4 +70,19 @@ export function codeOf(fn) {
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .replace(/\/\/.*$/gm, '')
     .replace(/(['"`])(?:\\.|(?!\1)[^\\])*\1/g, '""');
+}
+
+/**
+ * 进阶用例：使用 --basic（基础模式）运行时会被跳过。
+ * 第一遍学习时用基础模式，先把核心要求做对；回头再去掉 --basic 挑战完整要求。
+ */
+const BASIC = process.env.BASIC === '1';
+const SKIP_REASON = '基础模式下跳过（去掉 --basic 即可挑战）';
+
+export function advancedTest(name, fn) {
+  return test(`[进阶] ${name}`, { skip: BASIC && SKIP_REASON }, fn);
+}
+
+export function advancedDescribe(name, fn) {
+  return describe(`[进阶] ${name}`, { skip: BASIC && SKIP_REASON }, fn);
 }

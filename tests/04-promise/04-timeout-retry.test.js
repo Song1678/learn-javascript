@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load } from '../_helpers.js';
+import { load, advancedTest } from '../_helpers.js';
 
 const { sleep, withTimeout, retry, TimeoutError } = await load('04-promise/04-timeout-retry.js');
 
@@ -39,7 +39,7 @@ describe('withTimeout', () => {
     assert.ok(Date.now() - start < 150, '应在超时时间到达后立即失败');
   });
 
-  test('先完成时清除定时器（不留下挂起的定时器）', async () => {
+  advancedTest('先完成时清除定时器（不留下挂起的定时器）', async () => {
     const originalSet = globalThis.setTimeout;
     const originalClear = globalThis.clearTimeout;
     const active = new Set();
@@ -131,7 +131,7 @@ describe('retry', () => {
     assert.equal(calls, 2);
   });
 
-  test('指数退避：等待时间为 delay * factor^(n-1)', async () => {
+  advancedTest('指数退避：等待时间为 delay * factor^(n-1)', async () => {
     const times = [];
     await assert.rejects(
       retry(
@@ -149,7 +149,7 @@ describe('retry', () => {
     assert.ok(gaps[2] >= 75 && gaps[2] < 130, `第 3 次重试间隔约 80ms，实际 ${gaps[2]}`);
   });
 
-  test('onRetry 在每次重试前被调用', async () => {
+  advancedTest('onRetry 在每次重试前被调用', async () => {
     const log = [];
     await retry(
       async (n) => {
@@ -161,7 +161,7 @@ describe('retry', () => {
     assert.deepEqual(log, ['1:e1', '2:e2']);
   });
 
-  test('fn 同步抛错也能被重试', async () => {
+  advancedTest('fn 同步抛错也能被重试', async () => {
     let calls = 0;
     const result = await retry(() => {
       calls++;

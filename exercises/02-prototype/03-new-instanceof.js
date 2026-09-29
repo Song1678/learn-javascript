@@ -1,5 +1,7 @@
 /**
- * 练习 2-3：手写 new / instanceof / Object.create
+ * 练习 2-3：手写 new / instanceof / Object.create  ⭐⭐⭐ 选做
+ *
+ * 卡住时看同目录的 HINTS.md；[进阶] 要求可以第二遍再做（--basic 模式会跳过对应测试）。
  *
  * 【背景】
  * 阅读 Vue、Express、Koa 等框架源码时，经常会遇到直接操作原型链的代码。

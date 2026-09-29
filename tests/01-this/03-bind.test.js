@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { load, codeOf } from '../_helpers.js';
+import { load, codeOf, advancedTest } from '../_helpers.js';
 
 const { myCall, myApply, myBind, bindAll } = await load('01-this/03-bind.js');
 
@@ -35,7 +35,7 @@ describe('myCall', () => {
     assert.equal(myCall(getThis, undefined), globalThis);
   });
 
-  test('thisArg 为原始值时装箱', () => {
+  advancedTest('thisArg 为原始值时装箱', () => {
     function getThis() {
       return this;
     }
@@ -44,7 +44,7 @@ describe('myCall', () => {
     assert.equal(result.valueOf(), 42);
   });
 
-  test('被调用函数抛错时也不残留属性', () => {
+  advancedTest('被调用函数抛错时也不残留属性', () => {
     const obj = {};
     assert.throws(() =>
       myCall(function () {
@@ -86,7 +86,7 @@ describe('myBind', () => {
     assert.equal(sayHi('~'), '嗨，我是孙八~');
   });
 
-  test('作为构造函数被 new 调用时忽略 thisArg', () => {
+  advancedTest('作为构造函数被 new 调用时忽略 thisArg', () => {
     function Order(id, amount) {
       this.id = id;
       this.amount = amount;
