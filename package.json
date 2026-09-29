@@ -1,0 +1,17 @@
+{
+  "name": "learn-javascript",
+  "version": "1.0.0",
+  "private": true,
+  "description": "以真实业务场景为背景的 JavaScript 进阶练习：this、原型链、闭包、Promise、async/await、生成器与工程实践",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "test": "node scripts/test.js",
+    "test:solution": "node scripts/test.js --solution",
+    "demo": "node exercises/08-capstone/src/demo.js",
+    "demo:solution": "node solutions/08-capstone/src/demo.js"
+  },
+  "license": "MIT"
+}
